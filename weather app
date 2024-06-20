@@ -1,5 +1,5 @@
 import requests #sends http request
-api_key='9f7bd6b5543662153f6a5a579b3cd79b'#key authenticate to openweather api
+api_key='your api'#key authenticate to openweather api
 city=input('Enter your city: ')
 url=f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}' #q=query creating url
 response=requests.get(url)
