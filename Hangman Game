@@ -1,0 +1,116 @@
+import pygame
+import random
+import math
+from pygame.locals import*
+pygame.init()
+width=1000
+height=700
+screen=pygame.display.set_mode((width,height),RESIZABLE)
+pygame.display.set_caption('Hangman Game')
+
+fps=60
+clock=pygame.time.Clock()
+run=True
+
+radius=24
+space=20
+letters=[]
+start_at_x=round((width-(radius+space)*13)/2)
+start_at_y=400
+A=65
+for i in range(26):
+    x=start_at_x+space*2+((radius*2+space)*(i%13))
+    y=start_at_y+((i//13)*(space+radius*2))
+    letters.append([x,y,chr(A+i),True])
+
+#font
+font=pygame.font.SysFont('comicsans',40)
+WORD=pygame.font.SysFont('comicsans',30)
+TITLE=pygame.font.SysFont('comicsans',40)
+
+#image 
+images=[]
+for i in range(7):
+    image=pygame.image.load(f"image/hangman{i}.png")
+    default_img_size=(250,300)
+    image=pygame.transform.scale(image,default_img_size)
+    default_img_pos=(50,50)
+    images.append(image)
+print(images)
+
+#game variable
+hangman_status=0
+words=["DEVELPOER",'HAPPY','PYTHON','ENERGY','SPECIES','ENGINEERING','EXCELLENT']
+word=random.choice(words)
+guess=[]
+
+def draw():
+    screen.fill((255,255,255))
+    title=TITLE.render("HANGMAN",1,(255,0,0,0))
+    screen.blit(title,(width/1.9-title.get_width()/2,10))
+    display_words=""
+    for letter in word:
+        if letter in guess:
+            display_words+=letter+" "
+        else:
+            display_words+="_"
+    text=WORD.render(display_words,1,(0,255,0,0))
+    screen.blit(text,(500,250))
+
+    # draw buttons
+    for letter in letters:
+        x,y,ltr,visible=letter
+        if visible:
+            pygame.draw.circle(screen,(255,0,0,0),(x,y),radius,4)
+            txt=font.render(ltr,1,(255,0,0,0))
+            screen.blit(txt,(x-txt.get_width()/2,y-txt.get_height()/2))
+    screen.blit(images[hangman_status],(50,50))
+    pygame.display.update()
+
+while run:
+    clock.tick(fps)
+    draw()
+    for event in pygame.event.get():
+        if event.type==pygame.QUIT:
+            run=False
+        if event.type==pygame.MOUSEBUTTONDOWN:
+            m_x,m_y=pygame.mouse.get_pos()     
+            for letter in letters:
+                x,y,ltr,visible=letter
+                if visible:
+                    dist=math.sqrt((x-m_x)**2+(y-m_y)**2)
+                    if dist<=radius:
+                        letter[3]=False
+                        guess.append(ltr)
+                        if ltr not in words:
+                            hangman_status+=1
+    won=True
+    for letter in word:
+        if letter not in guess:
+            won=False
+            break
+    if won:
+        draw()
+        pygame.time.delay(1000)
+        screen.fill((0,0,0,0))
+        text=font.render("YOU WON",1,(255,0,5,255))
+        screen.blit(text,((width/2-text.get_width()/2),(height/2-text.get_height()/2)))
+        pygame.display.update()
+        pygame.time.delay(4000)
+        print("you won")
+        break
+    if hangman_status==6:
+        draw()
+        pygame.time.delay(1000)
+        screen.fill((0,0,0,0))
+        text=WORD.render("YOU LOST",1,(255,0,5,255))
+        answer=WORD.render("the answer is "+str(word),1,(129,255,0,0))
+        screen.blit(text,(width/2-text.get_width()/2,height/2-text.get_height()/2))
+        screen.blit(answer,((width/2-answer.get_width()/2),(height/2-answer.get_height()/2)+70))
+        pygame.display.update()
+        pygame.time.delay(4000)
+        print("you lost")
+        break
+pygame.quit()
+
+
