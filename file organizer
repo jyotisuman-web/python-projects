@@ -1,0 +1,41 @@
+#file organizer
+#how to automate files
+import os
+import shutil
+import smtplib
+print("What do you want to do: ")
+print("1. Organize Files\n")
+print("2. Create a text file\n")
+print("3. Send Email\n")
+n=input("Enter Your Choice: ")
+if n=='1':
+    path=input("Enter path: ")
+    files=os.listdir(path)
+    for file in files:
+        filename,extension=os.path.splitext(file)
+        extension=extension[1:]
+        if os.path.exists(path+'/'+extension):
+            shutil.move(path+'/'+file,path+'/'+extension+'/'+file)
+        else:
+            os.makedirs(path+'/'+extension)
+            shutil.move(path+'/'+file,path+'/'+extension+'/'+file)
+if n=='2':
+    file_name="New_auto_file.txt"
+    text=''
+    with open (file_name,'w') as file:
+        file.write(text)
+    print(F"File '{file_name}' has been created.")
+if n=='3':
+    sendenemail=input("Enter email of sender: ")
+    receivermail=input("enter email of the receiver: ")
+    message=input("Write your message: ")
+    try:
+       password=input('enter the password: ')
+       smtobj=smtplib.SMTP("gmail.com",587)
+       smtobj.sendmail(sendenemail,receivermail,message)
+       print("Succesfully send")
+    except Exception:
+       print("Error unable to connect.")
+
+
+
